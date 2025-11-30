@@ -5,28 +5,66 @@ grammar = """
     ?start: statement+
     
     ?statement: assignment
+        | if_stmt
+        | while_stmt
+        | for_stmt
         | expression
-        
+    
     assignment: NAME "=" expression
-
-    ?expression: term
-        | expression "+" term   -> add
-        | expression "-" term   -> sub
+    
+    if_stmt: "if" expression if_block ("else" else_block)?
+    if_block: "{" statement+ "}"
+    else_block: "{" statement+ "}"
+    
+    while_stmt: "while" expression while_block
+    while_block: "{" statement+ "}"
+    
+    for_stmt: "for" NAME "in" expression "to" expression for_block
+    for_block: "{" statement+ "}"
+    
+    ?expression: or_expr
+    
+    ?or_expr: and_expr
+        | or_expr "or" and_expr    -> or_op
+    
+    ?and_expr: not_expr
+        | and_expr "and" not_expr -> and_op
+    
+    ?not_expr: comparison
+        | "not" not_expr          -> not_op
+    
+    ?comparison: arith_expr
+        | arith_expr "==" arith_expr  -> eq
+        | arith_expr "!=" arith_expr  -> neq
+        | arith_expr "<" arith_expr   -> lt
+        | arith_expr ">" arith_expr   -> gt
+        | arith_expr "<=" arith_expr  -> lte
+        | arith_expr ">=" arith_expr  -> gte
+    
+    ?arith_expr: term
+        | arith_expr "+" term   -> add
+        | arith_expr "-" term   -> sub
     
     ?term: factor
-        | term "*" factor    -> mul
-        | term "/" factor    -> div
-        | term "^" factor    -> pow
-        | term "//" factor   -> floordiv
+        | term "*" factor  -> mul
+        | term "/" factor  -> div
+        | term "^" factor  -> pow
+        | term "//" factor -> floordiv
     
-    ?factor: NUMBER
-        | NAME
+    ?factor: atom
         | "(" expression ")"
+    
+    ?atom: NUMBER
+        | "true"   -> true
+        | "false"  -> false
+        | NAME
     
     NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
     NUMBER: /[0-9]+/
     
+    %import common.CPP_COMMENT
     %import common.WS
+    %ignore CPP_COMMENT
     %ignore WS
 """
 

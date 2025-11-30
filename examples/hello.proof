@@ -1,4 +1,10 @@
-x = 10
-y = 20
-z = x + y
-z * 2
+// find factorial in some way
+
+x = 5
+ans = 1
+
+for i in 1 to x {
+    ans = i * ans
+}
+
+ans
