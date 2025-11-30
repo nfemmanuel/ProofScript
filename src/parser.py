@@ -2,7 +2,12 @@ from lark import Lark
 
 # Grammar definition
 grammar = """
-    ?start: expression
+    ?start: statement+
+    
+    ?statement: assignment
+        | expression
+        
+    assignment: NAME "=" expression
 
     ?expression: term
         | expression "+" term   -> add
@@ -15,8 +20,10 @@ grammar = """
         | term "//" factor   -> floordiv
     
     ?factor: NUMBER
+        | NAME
         | "(" expression ")"
     
+    NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
     NUMBER: /[0-9]+/
     
     %import common.WS
